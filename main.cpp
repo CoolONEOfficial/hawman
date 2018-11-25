@@ -1,75 +1,98 @@
+#include "bintree.h"
 #include "bintreeend.h"
 #include "bintreenode.h"
 #include "bitfile.h"
 
 #include <iostream>
 #include <vector>
+#include <iterator>
+#include <algorithm>
+#include <set>
 
 using namespace std;
 
-struct CharCount {
-public:
-    CharCount(BinTreeEnd end) {
-        this->end = end;
+//class CharCount {
+//public:
+//    CharCount(BinTreeEnd& end) {
+//        this->end = end;
+//    }
+
+//    BinTreeNode end;
+
+//    BinTreeEnd* getEnd() {
+//        return dynamic_cast<BinTreeEnd*>(&end);
+//    }
+
+//    bool checked = false;
+//};
+
+static set<uchar> checkedChars;
+
+map<uchar, size_t>::iterator min_element(map<uchar, size_t> & charCounts) {
+    auto min = charCounts.begin();
+
+    auto mPairIter = charCounts.begin();
+    for(; mPairIter != charCounts.end(); mPairIter++) {
+        auto mPair = (*mPairIter);
+
+        if(find() && // todo: Find
+                mPair.first < (*min).first) {
+            min = mPairIter;
+        }
     }
 
-    CharCount(BinTreeEnd end) {
-        this
-    }
+    checkedChars.insert((*min).first);
 
-    CharCount() {}
+    return min;
+}
 
-    BinTreeNode end;
-
-    BinTreeNode getEnd() const {
-        return dynamic_cast<BinTreeEnd>();
-    }
-
-    bool checked = false;
-};
-
-BinTreeNode makeTree(vector<CharCount> charCounts) {
+BinTree makeTree(map<uchar, size_t> charCounts) {
+    vector<uchar> checkedChars;
     while(true) {
-        CharCount minOne = charCounts.at(0),
-                minTwo = charCounts.at(0);
+        auto minOne = charCounts.end(),
+                minTwo = charCounts.end();
 
-        for(size_t mCharCountId = 0; mCharCountId < charCounts.size(); mCharCountId++) {
-            auto mCharCount = charCounts.at(mCharCountId);
-            if(!mCharCount.checked && mCharCount.end.count < minOne.end.count) {
-                minOne = charCounts.at(mCharCountId);
-                mCharCount.checked = true;
-            }
-        }
+//        find_if(charCounts.begin(), charCounts.end(),
+//            [&checkedCounters](const BinTreeNode& node) {
 
-        for(size_t mCharCountId = 0; mCharCountId < charCounts.size(); mCharCountId++) {
-            auto mCharCount = charCounts.at(mCharCountId);
-            if(!mCharCount.checked && mCharCount.end.count < minTwo.end.count) {
-                minTwo = mCharCount;
-                mCharCount.checked = true;
-            }
-        }
+//                return true;
+//            });
 
-        CharCount mergeMin(
-                        BinTreeNode(&minOne.end, &minTwo.end, minOne.end.count + minTwo.end.count)
-                    );
+        minOne = min_element(charCounts);
+        minTwo = min_element(charCounts);
+
+//        auto a = (*minOne).first,aa = (*minTwo).first;
+//        int d = 4;
+//        for(size_t mCharCountId = 0; mCharCountId < charCounts.size(); mCharCountId++) {
+//            auto mCharCount = charCounts.at(mCharCountId);
+//            if(find(begin(checkedCounters), end(checkedCounters), mCharCount) == end(checkedCounters) && mCharCount.end.count < minOne.end.count) {
+//                minOne = charCounts.at(mCharCountId);
+//                mCharCount.checked = true;
+//            }
+//        }
+
+//        for(size_t mCharCountId = 0; mCharCountId < charCounts.size(); mCharCountId++) {
+//            auto mCharCount = charCounts.at(mCharCountId);
+//            if(!mCharCount.checked && mCharCount.end.count < minTwo.end.count) {
+//                minTwo = mCharCount;
+//                mCharCount.checked = true;
+//            }
+//        }
+
+//        CharCount mergeMin(
+//                        BinTreeNode(minOne.getEnd(), &minTwo.end, minOne.end.count + minTwo.end.count)
+//                    );
     }
 }
 
-BinTreeNode makeTree(vector<pair<BinTreeEnd, uint>> charCountPairs) {
-    vector<CharCount> charCounts;
-    for(auto& mCount: charCountPairs)
-        charCounts.push_back(CharCount(static_cast<BinTreeNode>(mCount.first), 0));
-    return makeTree(charCounts);
-}
+//BinTreeNode makeTree(vector<pair<BinTreeEnd, uint>> charCountPairs) {
+//    vector<CharCount> charCounts;
+//    for(auto& mCount: charCountPairs)
+//        charCounts.push_back(CharCount(static_cast<BinTreeNode>(mCount.first), 0));
+//    return makeTree(charCounts);
+//}
 
 int main() {
-    BinTreeNode tree(
-                new BinTreeEnd('d', 0),
-                new BinTreeNode(
-                    new BinTreeEnd('s', 0),
-                    new BinTreeEnd('a', 0)
-                )
-            );
 
 //    BitFile outfile("testfile");
 //    outfile.addBitVec(
@@ -98,44 +121,53 @@ int main() {
             cout << m << endl;
         }
 
-        vector<pair<BinTreeEnd, uint>> charCounts;
+        sort(chars.begin(), chars.end());
+
+        map<uchar, size_t> charCounts;
         for(auto mCharId: chars) {
-            auto found = find_if(charCounts.begin(), charCounts.end(), [&mCharId](pair<BinTreeEnd, uint> a)->bool{
-                return a.first.ch == mCharId;
-            });
-            if(found != charCounts.end()) {
-                (*found).second++;
-            } else {
-                charCounts.push_back(
-                            make_pair<BinTreeEnd, uint>(
-                                BinTreeEnd(), 1)
-                            );
+            if(charCounts.find(mCharId) == charCounts.end()) {
+                charCounts.insert(pair<uchar, size_t>(mCharId, 0));
             }
+            charCounts.at(mCharId)++;
         }
 
+        BinTree tree = makeTree(charCounts);;
 
-        cout << "charCounts: " << endl;
-        for(int mKey = 0; mKey < 256 / 4; mKey++) {
-            cout << (int) charCounts[              mKey].first.ch << '\t' << charCounts[              mKey].second << '\t' << " | "
-                 << (int) charCounts[256 / 4     + mKey].first.ch << '\t' << charCounts[256 / 4     + mKey].second << '\t' << " | "
-                 << (int) charCounts[256 / 4 * 2 + mKey].first.ch << '\t' << charCounts[256 / 4 * 2 + mKey].second << '\t' << " | "
-                 << (int) charCounts[256 / 4 * 3 + mKey].first.ch << '\t' << charCounts[256 / 4 * 3 + mKey].second << endl;
-        }
+//        vector<BinTreeNode> charCounts;
+//        for(auto mCharId: chars) {
+//            auto found = find_if(charCounts.begin(), charCounts.end(), [&mCharId](pair<BinTreeEnd, uint> a)->bool{
+//                return a.first.ch == mCharId;
+//            });
+//            if(found != charCounts.end()) {
+//                (*found).second++;
+//            } else {
+//                charCounts.push_back(
+//                            make_pair<BinTreeEnd, uint>(
+//                                BinTreeEnd(), 1)
+//                            );
+//            }
+//        }
 
-        sort(charCounts.begin(), charCounts.end(),
-            [](pair<BinTreeEnd, int> a, pair<BinTreeEnd, int> b) {
-                return a.second > b.second;
-            }
-        );
+//        cout << "charCounts: " << endl;
+//        for(int mKey = 0; mKey < 256 / 4; mKey++) {
+//            cout << (int) charCounts[              mKey].first.ch << '\t' << charCounts[              mKey].second << '\t' << " | "
+//                 << (int) charCounts[256 / 4     + mKey].first.ch << '\t' << charCounts[256 / 4     + mKey].second << '\t' << " | "
+//                 << (int) charCounts[256 / 4 * 2 + mKey].first.ch << '\t' << charCounts[256 / 4 * 2 + mKey].second << '\t' << " | "
+//                 << (int) charCounts[256 / 4 * 3 + mKey].first.ch << '\t' << charCounts[256 / 4 * 3 + mKey].second << endl;
+//        }
 
-        cout << "Sorted charCounts: " << endl;
-        for(int mKey = 0; mKey < 256 / 4; mKey++) {
-            cout <<               mKey << '\t' << (int) charCounts[              mKey].first.ch << '\t' << charCounts[              mKey].second << '\t' << " | "
-                 << 256 / 4     + mKey << '\t' << (int) charCounts[256 / 4     + mKey].first.ch << '\t' << charCounts[256 / 4     + mKey].second << '\t' << " | "
-                 << 256 / 4 * 2 + mKey << '\t' << (int) charCounts[256 / 4 * 2 + mKey].first.ch << '\t' << charCounts[256 / 4 * 2 + mKey].second << '\t' << " | "
-                 << 256 / 4 * 3 + mKey << '\t' << (int) charCounts[256 / 4 * 3 + mKey].first.ch << '\t' << charCounts[256 / 4 * 3 + mKey].second << endl;
-        }
+//        sort(charCounts.begin(), charCounts.end(),
+//            [](pair<BinTreeEnd, int> a, pair<BinTreeEnd, int> b) {
+//                return a.second > b.second;
+//            }
+//        );
 
-        BinTreeNode tree = makeTree(charCounts);
+//        cout << "Sorted charCounts: " << endl;
+//        for(int mKey = 0; mKey < 256 / 4; mKey++) {
+//            cout <<               mKey << '\t' << (int) charCounts[              mKey].first.ch << '\t' << charCounts[              mKey].second << '\t' << " | "
+//                 << 256 / 4     + mKey << '\t' << (int) charCounts[256 / 4     + mKey].first.ch << '\t' << charCounts[256 / 4     + mKey].second << '\t' << " | "
+//                 << 256 / 4 * 2 + mKey << '\t' << (int) charCounts[256 / 4 * 2 + mKey].first.ch << '\t' << charCounts[256 / 4 * 2 + mKey].second << '\t' << " | "
+//                 << 256 / 4 * 3 + mKey << '\t' << (int) charCounts[256 / 4 * 3 + mKey].first.ch << '\t' << charCounts[256 / 4 * 3 + mKey].second << endl;
+//        }
     } else cout << "File not readable!" << endl;
 }

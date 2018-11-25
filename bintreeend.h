@@ -6,6 +6,7 @@
 class BinTreeEnd : public BinTreeNode
 {
 public:
+    BinTreeEnd();
     BinTreeEnd(vector<BinTreeNode>* vec, char ch, int count);
 
     char ch;

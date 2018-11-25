@@ -1,7 +1,6 @@
 #ifndef BINTREENODE_H
 #define BINTREENODE_H
 
-#include <limits>
 #include <utility>
 #include <vector>
 
@@ -10,14 +9,12 @@ using namespace std;
 class BinTreeNode
 {
 protected:
-    BinTreeNode(vector<BinTreeNode>* vec, int count = 0);
+    BinTreeNode(vector<BinTreeNode>* vec, size_t count = 0);
 public:
-    BinTreeNode(vector<BinTreeNode>* vec, size_t left, size_t right, int count = 0);
+    BinTreeNode();
+    BinTreeNode(vector<BinTreeNode>* vec, size_t left, size_t right, size_t count = 0);
     virtual ~BinTreeNode();
-
-
-
-    unsigned int count;
+    size_t count;
 
 private:
     size_t left,

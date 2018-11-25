@@ -16,12 +16,19 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-SOURCES += main.cpp \
+SOURCES += \
+    main.cpp \
     bintreenode.cpp \
     bintreeend.cpp \
-    bintree.cpp
+    bintree.cpp \
+    bitfile.cpp
 
 HEADERS += \
     bintreenode.h \
     bintreeend.h \
-    bintree.h
+    bintree.h \
+    bitfile.h
+
+SUBDIRS += hawman.pro
+
+DISTFILES +=

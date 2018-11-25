@@ -1,14 +1,17 @@
+#include "bintree.h"
 #include "bintreenode.h"
 
 #include <limits>
 
-BinTreeNode::BinTreeNode(vector<BinTreeNode> *vec, int count)
+BinTreeNode::BinTreeNode(vector<BinTreeNode> *vec, size_t count)
 {
     this->vec = vec;
     this->count = count;
 }
 
-BinTreeNode::BinTreeNode(vector<BinTreeNode> *vec, size_t left, size_t right, int count)
+BinTreeNode::BinTreeNode() {}
+
+BinTreeNode::BinTreeNode(vector<BinTreeNode> *vec, size_t left, size_t right, size_t count)
     :BinTreeNode(vec, count)
 {
     this->left = left;
@@ -20,18 +23,18 @@ BinTreeNode::BinTreeNode(vector<BinTreeNode> *vec, size_t left, size_t right, in
 BinTreeNode::~BinTreeNode()
 {
     if(vec->size() > left) {
-        vec->at(left).parent = NoId;
+        vec->at(left).parent = BinTree::NoId;
     }
 
     if(vec->size() > right) {
-        vec->at(right).parent = NoId;
+        vec->at(right).parent = BinTree::NoId;
     }
 }
 
 void BinTreeNode::setLeft(size_t left)
 {
     if(vec->size() > left) {
-        vec->at(left).parent = NoId;
+        vec->at(left).parent = BinTree::NoId;
     }
     this->left = left;
 }
@@ -44,7 +47,7 @@ size_t BinTreeNode::getLeft() const
 void BinTreeNode::setRight(size_t right)
 {
     if(vec->size() > right) {
-        vec->at(right).parent = NoId;
+        vec->at(right).parent = BinTree::NoId;
     }
     this->right = right;
 }
